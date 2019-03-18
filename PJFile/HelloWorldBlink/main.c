@@ -1,24 +1,48 @@
 #include "msp430g2553.h"  //Contains all definitions for registers and built-in functions
+#define delayCircleNum 20000
+
+void delay(int n);
+
 int main(void)  //Main program
 {
    WDTCTL = WDTPW + WDTHOLD; // Stop watchdog timer
+   P1DIR |= 11000001; // Set P1.0 to output and P1.3 to input direction
 
-   P1DIR |= BIT0; // Set P1.0 to output and P1.3 to input direction
-   P1OUT &= ~BIT0; // set P1.0 to Off
-   P1IE |= BIT3; // P1.3 interrupt enabled
-   P1IFG &= ~BIT3; // P1.3 interrupt flag cleared
+   while(1) //Loop forever, we'll do our job in the interrupt routine...
+   {
+       int LoopB1=2;
 
-   __bis_SR_register(GIE); // Enable all interrupts
+      while(LoopB1!=0)
+      {
+       int B11=delayCircleNum;
+       while(B11!=0)
+       {
+       P1OUT |= 00000001;
+       B11--;
+       }
 
-   //while(1) //Loop forever, we'll do our job in the interrupt routine...
-   {}
-}
-#pragma vector=PORT1_VECTOR
-__interrupt void Port_1(void)
-{
-    P1OUT ^= BIT0;  // Toggle P1.0
+       int B12=delayCircleNum;
+       while(B12!=0)
+       {
+       P1OUT &= 00000000;
+       B12--;
+       }
+       LoopB1--;
+      }
 
-    //while(~P1IFG){};
+       int B21=delayCircleNum;
+       while(B21!=0)
+       {
+       P1OUT |= 11000001;
+       B21--;
+       }
 
-    P1IFG &= ~BIT3; // P1.3 interrupt flag cleared
+       int B22=delayCircleNum;
+       while(B22!=0)
+       {
+        P1OUT &= 00000000;
+        B22--;
+       }
+
+   }
 }
