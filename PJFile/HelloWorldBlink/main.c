@@ -1,5 +1,5 @@
 #include "msp430g2553.h"  //Contains all definitions for registers and built-in functions
-#define delayCircleNum 20000
+#define delayCircleNum 30000
 
 void delay(int n);
 
