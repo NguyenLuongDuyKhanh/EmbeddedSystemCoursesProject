@@ -33,7 +33,7 @@ int main(void)  //Main program
        int B21=delayCircleNum;
        while(B21!=0)
        {
-       P1OUT |= 0b01000001;
+       P1OUT |= 0b01000000;
        B21--;
        }
 
