@@ -3,9 +3,9 @@
 We have to work on a project to measure temperate and hump of a bow of tree, then push them to the server for easy to check any time, any where
 
 We have 2 part of this project:
-*Server
-*Measurement (using MSP430G2553 and ...)
-*Wifi solution for the measurement (ESP8266)
+* Server
+* Measurement (using MSP430G2553 and ...)
+* Wifi solution for the measurement (ESP8266)
 
 ## Server
 
