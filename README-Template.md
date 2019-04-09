@@ -1,8 +1,13 @@
-# Project Title
+# Embedded System Courses
 
-One Paragraph of project description goes here
+We have to work on a project to measure temperate and hump of a bow of tree, then push them to the server for easy to check any time, any where
 
-## Getting Started
+We have 2 part of this project:
+*Server
+*Measurement (using MSP430G2553 and ...)
+*Wifi solution for the measurement (ESP8266)
+
+## Server
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
@@ -31,6 +36,8 @@ until finished
 ```
 
 End with an example of getting some data out of the system or using it for a little demo
+## Measurement
+## Wifi Solution
 
 ## Running the tests
 
