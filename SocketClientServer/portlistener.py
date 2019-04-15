@@ -1,8 +1,19 @@
 
 # first of all import the socket library 
 import socket                
-  
+import pymysql.cursors  
+
+connection = pymysql.connect(host='localhost',
+                             user='root',
+                             password='root',
+				db='test',
+                          unix_socket='/var/run/mysqld/mysqld.sock')
+
+print ("connect successful!!")
+cursor=connection.cursor()
 # next create a socket object 
+
+
 s = socket.socket()          
 print "Socket successfully created"
   
@@ -32,6 +43,12 @@ while True:
   
    # send a thank you message to the client.  
    c.send("Thank you for connecting") 
-  
-   # Close the connection with the client 
+	#cursor=connection.cursor()
+   sql="select * from testingtable"
+   cursor.execute(sql)
+   print ("cursor.description: ", cursor.description)  
+   print ()
+   for row in cursor:
+	print(row)
+ # Close the connection with the client 
    c.close() 
