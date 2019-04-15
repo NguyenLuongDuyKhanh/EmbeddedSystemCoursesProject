@@ -1,119 +1,104 @@
-#include "msp430g2553.h"  //Contains all definitions for registers and built-in functions
-#include <ctype.h>
-#include <stdlib.h>
-//#include "morse.h"
+#include <msp430.h>
+//#include "UART.h"
 
-#define delayperSig  300000
-#define delayperChar 600000
-#define delayperWord 1000000
+/**
+ * main.c
+ */
 
-//#define delayperSig  1
-//#define delayperChar 1
-//#define delayperWord 1
+char Hello[]={'H','e','l','l','o'};
+char Hi[]={'H','i'};
 
-#define setLedRed P1OUT|=(1<<0)
-#define clrLedRed P1OUT&=~(1<<0)
-#define setLedGreen P1OUT|=(1<<6)
-#define clrLedGreen P1OUT&=~(1<<6)
-
-//void delay(int n);
-
-char name[]={'N','G','U','Y','E','N',' ','L','U','O','N','G',' ','D','U','Y',' ','K','H','A','N','H'};
-
-//char name[]={'A',' ','B',' ','C'};
-unsigned int morse[][6]=
-    {   //col 0->6
-        { 2, 1, 0, 0, 0, 0}, //A
-        { 4, 0, 1, 1, 1, 0}, //B
-        { 4, 0, 1, 0, 1, 0}, //C
-        { 3, 0, 1, 1, 0, 0}, //D
-        { 1, 1, 0, 0, 0, 0}, //E
-        { 4, 1, 1, 0, 1, 0}, //F
-        { 3, 0, 0, 1, 0, 0}, //G
-        { 4, 1, 1, 1, 1, 0}, //H
-        { 2, 1, 1, 0, 0, 0}, //I
-        { 4, 1, 0, 0, 0, 0}, //J
-        { 3, 0, 1, 0, 0, 0}, //K
-        { 4, 1, 0, 1, 1, 0}, //L
-        { 2, 0, 0, 0, 0, 0}, //M
-        { 2, 0, 1, 0, 0, 0}, //N
-        { 3, 0, 0, 0, 0, 0}, //O
-        { 4, 1, 0, 0, 1, 0}, //P
-        { 4, 0, 0, 1, 0, 0}, //Q
-        { 3, 1, 0, 1, 0, 0}, //R
-        { 3, 1, 1, 1, 0, 0}, //S
-        { 1, 0, 0, 0, 0, 0}, //T
-        { 3, 1, 1, 0, 0, 0}, //U
-        { 4, 1, 1, 1, 0, 0}, //V
-        { 3, 1, 0, 0, 0, 0}, //W
-        { 4, 0, 1, 1, 0, 0}, //X
-        { 4, 0, 1, 0, 0, 0}, //Y
-        { 4, 0, 0, 1, 1, 0}, //Z
-    };
-
-int main(void)  //Main program
+void CauhinhClock(void)
 {
+    //8MHz
+    if(CALBC1_8MHZ == 0xFF)
+    {
+        while(1);
+    }
+    DCOCTL = 0;
+    BCSCTL1 = CALBC1_8MHZ;
+    DCOCTL = CALDCO_8MHZ;
 
-   WDTCTL = WDTPW + WDTHOLD; // Stop watchdog timer
-   P1DIR |= 0b01000001; // Set P1.0, P1.6 to output and P1.3 to input direction
-   //Test Led
-   setLedRed;
-   setLedGreen;
-   clrLedRed;
-   clrLedGreen;
-   ///////////
 
- //  while(1) //Loop forever, we'll do our job in the interrupt routine...
-   {
+    BCSCTL2 |= SELM_0;
+}
 
-       int charNumofName;
-       for (charNumofName = 0 ; charNumofName < sizeof(name) ; charNumofName++)
-       {
-           if(name[charNumofName]==' ')
-                         {
-                             int delay=delayperWord;
-                             while(delay!=0)
-                             {
-                                 setLedGreen;
-                                 delay--;
-                             }
-                             clrLedGreen;
-                         }
-           else
-           {
-           int sigNum;
-           for (sigNum=0 ; sigNum < morse[name[charNumofName]-65][0]; sigNum++ )
-           {
+void CauhinhLed(void)
+{
+    P1DIR |= BIT0 + BIT6;
+    P1OUT &= ~BIT0;
+    P1OUT &= ~BIT6;
+}
+void CauhinhUART(void)
+{
+    P1SEL = BIT1 + BIT2;
+    P1SEL2 = BIT1 + BIT2;
+    UCA0CTL1 |= UCSWRST;
 
-               if (morse[name[charNumofName]-65][sigNum+1] == 1)
-               {
-                   int delay=delayperSig;
-                   while(delay!=0)
-                   {
-                   setLedRed;
-                   delay--;
-                   }
-               }
-               if (morse[name[charNumofName]-65][sigNum+1] == 0)
-               {
+    UCA0CTL0 = 0x00;
 
-                   int delay=delayperSig;
-                   while(delay!=0)
-                   {
-                       clrLedRed;
-                       delay--;
-                   }
-               }
-           }
-               int delay=delayperChar;
-               while(delay!=0)
-               {
-                   clrLedRed;
-                   clrLedGreen;
-                   delay--;
-               }
 
-           }
-       }
-   }
+
+    UCA0CTL1 = UCSSEL_2 | UCSWRST;
+
+    UCA0MCTL = UCBRF_1 | UCBRS_0 | UCOS16;
+
+    UCA0BR0 = 52;
+    UCA0BR1 = 00;
+
+    UCA0CTL1 &= ~UCSWRST;
+
+    IE2 |= UCA0RXIE;
+
+    _BIS_SR(GIE);
+}
+
+void UARTSendByte(unsigned char byte)
+{
+    while(!(IFG2 & UCA0TXIFG));
+
+    UCA0TXBUF = byte;
+}
+
+void UARTSend_String(unsigned char *pData, unsigned char Length)
+{
+    unsigned char i = 0;
+    for(i = 0 ; i < Length;i++)
+    {
+        UARTSendByte(pData[i]);
+    }
+}
+unsigned int numofchar=0;
+void main(void)
+{
+    WDTCTL = WDTPW | WDTHOLD;   // stop watchdog timer
+
+    CauhinhClock();
+    CauhinhLed();
+    CauhinhUART();
+    //numofchar=0;
+    while(1)
+    {
+        numofchar=0;
+        //UARTSendByte(numofchar);
+
+       // _delay_cycles(8000000);
+    }
+
+
+}
+
+#pragma vector = USCIAB0RX_VECTOR
+__interrupt void USCI0RX_ISR(void)
+{
+    while (UCA0RXBUF!= 'a')
+    {
+        input[]
+    }
+    UCA0TXBUF = UCA0RXBUF;
+    numofchar=numofchar+1;
+    UARTSendByte(numofchar);
+
+  //UARTSendByte(numofchar);
+ // UARTSendByte('a');
 }
