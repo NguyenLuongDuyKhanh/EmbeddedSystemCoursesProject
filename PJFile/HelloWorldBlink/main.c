@@ -1,7 +1,7 @@
 
 #include "myFunction.h"
 
-
+volatile unsigned char UARTRecvdata;
 
 void main()
 {
@@ -10,23 +10,45 @@ void main()
     interuptconfig();
     IOconfig();
     clockconfig();
+    timerconfig();
+    UARTconfig();
 
+    UARTTx('a');                //check if UART function work well
     while(1)
     {
-        //ledRedOff;
-        //ledGreenOn;
-        //_delay_cycles(1000);
-        //ledRedOn;
-        //ledGreenOff;
-        //_delay_cycles(1000);
-    }
 
+    }
+}
+
+// Timer A0 interrupt service routine
+#pragma vector=TIMER0_A1_VECTOR
+__interrupt void Timer_A_1 (void)
+{
+   switch(TA0IV)
+   {
+   case 2:  break;
+   case 4:  break;
+   case 10: P1OUT ^= BIT0;
+               break;
+   }
 }
 
 #pragma vector=PORT1_VECTOR
 __interrupt void Port(void)
 {
-
     P1OUT ^= BIT0 + BIT6;
     P1IFG &= ~BIT3;
+    UARTTx('K');
+}
+
+#pragma vector=USCIAB0RX_VECTOR
+__interrupt void USCI0RX_ISR(void)
+{
+    //UCA0TXBUF = UCA0RXBUF;                    //for debug only
+    UARTRecvdata = UCA0RXBUF;
+
+    if(UARTRecvdata == 'a')
+    {
+        P1OUT ^= BIT0 + BIT6 ;
+    }
 }
