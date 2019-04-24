@@ -10,7 +10,14 @@ We have 2 part of this project:
 ## Server
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
-
+````
+source activate
+````
+````
+deactivate
+````
+python manage.py runserver 0:8000
+https://stackoverflow.com/questions/15841295/error-that-ip-address-cant-be-assigned-to-when-running-app
 ### Prerequisites
 
 What things you need to install the software and how to install them
@@ -81,6 +88,10 @@ See also the list of [contributors](https://github.com/your/project/contributors
 ## License
 
 This project is licensed under the GNU General Public License v3.0 - see the [LICENSE.md](LICENSE.md) file for details
+
+## Referent
+
+https://medium.com/@ino.liao/pythonvirtualenv-be2f122cebc3
 
 ## Acknowledgments
 
