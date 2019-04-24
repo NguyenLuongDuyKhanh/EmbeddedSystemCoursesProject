@@ -37,4 +37,3 @@ void UARTTx(unsigned char byte);
 
 #endif /* MYFUNCTION_H_ */
 
-
