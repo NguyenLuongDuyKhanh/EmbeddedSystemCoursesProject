@@ -10,7 +10,14 @@ We have 2 part of this project:
 ## Server
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
-
+````
+source activate
+````
+````
+deactivate
+````
+python manage.py runserver 0:8000
+https://stackoverflow.com/questions/15841295/error-that-ip-address-cant-be-assigned-to-when-running-app
 ### Prerequisites
 
 What things you need to install the software and how to install them
@@ -70,23 +77,22 @@ Add additional notes about how to deploy this on a live system
 * [Maven](https://maven.apache.org/) - Dependency Management
 * [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
 
-## Contributing
-
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
-
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
-
 ## Authors
 
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
+* **Nguyen Luong Duy Khanh** - *Initial work* - [Github](https://github.com/NguyenLuongDuyKhanh) [FaceBook](https://www.facebook.com/nguyenluongduykhanh)
+* **Dang Duc Bao** - [Github](https://github.com/doanhethongnhung)
+* **Pham Ho Ngoc Binh** - [Github](https://github.com/phamhongocbinh)
 
 See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the GNU General Public License v3.0 - see the [LICENSE.md](LICENSE.md) file for details
+
+## Referent
+
+https://medium.com/@ino.liao/pythonvirtualenv-be2f122cebc3
+https://realpython.com/python-virtual-environments-a-primer/
 
 ## Acknowledgments
 
