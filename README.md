@@ -92,6 +92,7 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 ## Referent
 
 https://medium.com/@ino.liao/pythonvirtualenv-be2f122cebc3
+https://realpython.com/python-virtual-environments-a-primer/
 
 ## Acknowledgments
 
