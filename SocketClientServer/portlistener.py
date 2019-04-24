@@ -1,4 +1,3 @@
-
 # first of all import the socket library 
 import socket                
 import pymysql.cursors  
