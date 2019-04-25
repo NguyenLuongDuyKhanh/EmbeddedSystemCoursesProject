@@ -98,6 +98,8 @@ https://docs.djangoproject.com/en/2.2/intro/overview/
 https://docs.djangoproject.com/en/2.2/topics/db/
 https://www.webforefront.com/django/setupdjangodatabase.html
 https://docs.djangoproject.com/en/2.2/ref/databases/
+http://www.ti.com/lit/ug/slau144j/slau144j.pdf
+http://www.ti.com/lit/ds/symlink/msp430g2553.pdf
 
 ## Acknowledgments
 
