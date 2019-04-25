@@ -92,7 +92,12 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 ## Referent
 
 https://medium.com/@ino.liao/pythonvirtualenv-be2f122cebc3
+https://medium.com/@doanhtu/l%C3%A0m-sao-%C4%91%E1%BB%83-t%E1%BA%A1o-1-trang-web-v%E1%BB%9Bi-django-i-fddff91786f7
 https://realpython.com/python-virtual-environments-a-primer/
+https://docs.djangoproject.com/en/2.2/intro/overview/
+https://docs.djangoproject.com/en/2.2/topics/db/
+https://www.webforefront.com/django/setupdjangodatabase.html
+https://docs.djangoproject.com/en/2.2/ref/databases/
 
 ## Acknowledgments
 
