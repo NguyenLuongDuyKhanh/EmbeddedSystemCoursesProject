@@ -3,6 +3,7 @@
 
 volatile unsigned char UARTRecvdata;
 
+
 void main()
 {
     WDTCTL = WDTPW + WDTHOLD; //stop watchdog timer
@@ -12,10 +13,16 @@ void main()
     clockconfig();
     timerconfig();
     UARTconfig();
+    ADCconfig();
 
     UARTTx('a');                //check if UART function work well
+    volatile int testingvar;
+    volatile float testingvar2;
     while(1)
     {
+        //double volt = gettemp() * (3.3 / 254.0);
+        testingvar = amt1001_gethumidity( gettemp() * (3.3 / 254.0));
+        testingvar2 = gettemp() * (3.3 / 254.0);
 
     }
 }
@@ -38,7 +45,7 @@ __interrupt void Port(void)
 {
     P1OUT ^= BIT0 + BIT6;
     P1IFG &= ~BIT3;
-    UARTTx('K');
+    UARTTx(gettemp());
 }
 
 #pragma vector=USCIAB0RX_VECTOR
@@ -52,3 +59,5 @@ __interrupt void USCI0RX_ISR(void)
         P1OUT ^= BIT0 + BIT6 ;
     }
 }
+
+
