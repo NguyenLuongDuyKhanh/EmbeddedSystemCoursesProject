@@ -35,7 +35,7 @@ void timerconfig();
 void UARTconfig();
 void UARTTx(unsigned char byte);
 void ADCconfig();
-unsigned char gettemp();
+unsigned int gettemp();
 
 //define min and max valid voltage to measure humidity
 #define AMT1001_HUMIDITYVMIN 0.0

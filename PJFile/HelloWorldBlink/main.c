@@ -2,7 +2,10 @@
 #include "myFunction.h"
 
 volatile unsigned char UARTRecvdata;
-
+volatile unsigned int am;
+volatile unsigned int adc;
+volatile float vol;
+volatile unsigned int test;
 
 void main()
 {
@@ -16,14 +19,9 @@ void main()
     ADCconfig();
 
     UARTTx('a');                //check if UART function work well
-    volatile int testingvar;
-    volatile float testingvar2;
+
     while(1)
     {
-        //double volt = gettemp() * (3.3 / 254.0);
-        testingvar = amt1001_gethumidity( gettemp() * (3.3 / 254.0));
-        testingvar2 = gettemp() * (3.3 / 254.0);
-
     }
 }
 
@@ -45,7 +43,16 @@ __interrupt void Port(void)
 {
     P1OUT ^= BIT0 + BIT6;
     P1IFG &= ~BIT3;
-    UARTTx(gettemp());
+
+    ADC10CTL0 |= ADC10SC;
+           while (ADC10CTL1 & 1);
+           ADC10SA = ((unsigned int)&test);
+
+           am = amt1001_gethumidity( gettemp() * (3.3 / 254.0));
+           vol = gettemp() * (3.3 / 1024);
+           adc = gettemp();
+
+    UARTTx(test);
 }
 
 #pragma vector=USCIAB0RX_VECTOR
@@ -59,5 +66,4 @@ __interrupt void USCI0RX_ISR(void)
         P1OUT ^= BIT0 + BIT6 ;
     }
 }
-
 

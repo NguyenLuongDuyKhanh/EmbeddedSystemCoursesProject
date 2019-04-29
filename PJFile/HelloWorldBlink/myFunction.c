@@ -88,13 +88,32 @@ void UARTTx(unsigned char byte)
 
 void ADCconfig()
 {
+    // Disable ADC before configuration.
+       ADC10CTL0 &= ~ENC;
+
+       // Turn ADC on in single line before configuration.
+       ADC10CTL0 = ADC10ON;
+
+       // Make sure the ADC is not running per 22.2.7
+           while(ADC10CTL1 & ADC10BUSY);
+
     ADC10CTL1 = INCH_5 |ADC10SSEL_0;
     ADC10AE0 = BIT5;
     ADC10CTL0 = SREF_0;
     ADC10CTL0 |= ADC10ON + ENC;
+
+    // Repeat conversion.
+        ADC10DTC0 = ADC10CT;
+        // Only one conversion at a time.
+        ADC10DTC1 = 1;
+
+    // Enable conversion.
+      ADC10CTL0 |= ENC;
+      // Start conversion
+      ADC10CTL0 |= ADC10SC;
 }
 
-unsigned char gettemp()
+unsigned int gettemp()
 {
     ADC10CTL0 |= ADC10SC;
     while (ADC10CTL1 & 1);
