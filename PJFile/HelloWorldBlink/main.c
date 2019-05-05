@@ -14,6 +14,14 @@ void main()
     UARTconfig();
     ADCconfig();
 
+    PacketNum=0;
+    SecondsIn=1;
+    MinutesIn=0;
+
+    Count1s=0;
+    Seconds=0;
+    Minutes=0;
+
     UARTTx('a');                //check if UART function work well
 
     while(1)

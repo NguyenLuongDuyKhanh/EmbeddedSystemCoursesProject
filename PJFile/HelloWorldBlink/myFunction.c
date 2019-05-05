@@ -67,21 +67,16 @@ void UARTTx(unsigned char byte)
 
 void ADCconfig()
 {
-    ADC10CTL1 = INCH_5 + CONSEQ_1;            // A2/A1/A0, single sequence
-          ADC10CTL0 = ADC10SHT_2 + MSC + ADC10ON + ADC10IE;
-          ADC10DTC1 = 0x02;                         // 3 conversions
+    ADC10CTL1 = INCH_5 + CONSEQ_1;            //
+    ADC10CTL0 = ADC10SHT_2 + MSC + ADC10ON + ADC10IE + REF2_5V +REFON;
+          ADC10DTC1 = 0x02;                         // 2 conversions
           ADC10AE0 |= BIT5 + BIT4;                         // Disable digital I/O on P1.0 to P1.2
 }
-unsigned int gettemp()
-{
-    ADC10CTL0 |= ADC10SC;
-    while (ADC10CTL1 & 1);
-    return ADC10MEM;
-}
 
-int amt1001_gethumidity(float voltage) {
+
+unsigned char amt1001_gethumidity(double voltage) {
     if(voltage > AMT1001_HUMIDITYVMIN && voltage < AMT1001_HUMIDITYVMAX)
-        return (int)(AMT1001_HUMIDITYSLOPE*voltage);
+        return (unsigned char)(AMT1001_HUMIDITYSLOPE*voltage);
     else
         return -1;
 }
@@ -96,7 +91,7 @@ const float amt1001_lookuptable[amt1001_lookuptablesize] = {
         -86.99 , -59.05 , -49.91 , -43.96 , -39.45 , -35.76 , -32.61 , -29.84 , -27.37 , -25.11 , -23.03 , -21.1 , -19.29 , -17.58 , -15.95 , -14.41 , -12.92 , -11.5 , -10.12 , -8.79 , -7.5 , -6.25 , -5.03 , -3.83 , -2.66 , -1.52 , -0.4 , 0.71 , 1.8 , 2.87 , 3.93 , 4.97 , 6.01 , 7.03 , 8.05 , 9.05 , 10.06 , 11.05 , 12.04 , 13.03 , 14.02 , 15 , 15.98 , 16.96 , 17.95 , 18.93 , 19.92 , 20.9 , 21.9 , 22.89 , 23.89 , 24.9 , 25.91 , 26.93 , 27.96 , 29 , 30.05 , 31.11 , 32.19 , 33.27 , 34.37 , 35.49 , 36.63 , 37.78 , 38.95 , 40.14 , 41.36 , 42.6 , 43.87 , 45.17 , 46.5 , 47.86 , 49.26 , 50.7 , 52.18 , 53.71 , 55.29 , 56.92 , 58.62 , 60.38 , 62.22 , 64.14 , 66.15 , 68.26 , 70.49 , 72.84 , 75.34 , 78.01 , 80.87 , 83.95 , 87.3 , 90.96 , 95 , 99.52 , 104.62 , 110.48 , 117.36 , 125.67 , 136.09 , 149.94 , 170.2 , 206.11 , 330.42
 };
 
-int amt1001_gettemperature(int adcvalue) {
+unsigned char amt1001_gettemperature(int adcvalue) {
 
 
     float t = 0.0;
@@ -150,16 +145,30 @@ __interrupt void Timer_A_1 (void)
            Count1s=0;
            Seconds++;
 
-           ADC10CTL0 &= ~ENC;
-              while (ADC10CTL1 & BUSY);               // Wait if ADC10 core is active
-              ADC10SA = (unsigned int)&test;            // Copies data in ADC10SA to unsigned int adc array
-              ADC10CTL0 |= ENC + ADC10SC;             //
-
-           UARTTx(Seconds);
-           UARTTx(test[0]/4);
-           UARTTx(test[1]/4);
-           __bis_SR_register(CPUOFF + GIE);
+           if(Seconds==60)
+           {
+               Seconds=0;
+               Minutes++;
            }
+
+           if( (Seconds == SecondsIn) && (Minutes == MinutesIn))
+           {
+               PacketNum++;
+
+                   ADC10CTL0 &= ~ENC;
+                  while (ADC10CTL1 & BUSY);               // Wait if ADC10 core is active
+                  ADC10SA = (unsigned int)&test;            // Copies data in ADC10SA to unsigned int adc array
+                  ADC10CTL0 |= ENC + ADC10SC;             //
+
+               UARTTx(PacketNum);
+               UARTTx(amt1001_gethumidity((double)(test[0]*(5/1023.0))));
+               UARTTx(amt1001_gettemperature(test[1]));
+
+               Seconds=0;
+               Minutes=0;
+               //__bis_SR_register(CPUOFF + GIE);
+               }
+               }
            break;
        }
    }
@@ -211,10 +220,11 @@ __interrupt void USCI0RX_ISR(void)
     }
     P1OUT &= ~RXLED;
     */
+    //SecondsIn=UCA0RXBUF;
 }
 
 #pragma vector=ADC10_VECTOR
 __interrupt void ADC10_ISR(void)
 {
-  __bic_SR_register_on_exit(CPUOFF);        // Clear CPUOFF bit from 0(SR)
+  //__bic_SR_register_on_exit(CPUOFF);        // Clear CPUOFF bit from 0(SR)
 }

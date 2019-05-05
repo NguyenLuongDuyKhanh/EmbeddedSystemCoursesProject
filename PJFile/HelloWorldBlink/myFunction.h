@@ -34,9 +34,14 @@ volatile unsigned int adc;
 volatile float vol;
 volatile unsigned int test[2];
 
-volatile unsigned char Count1s;
-volatile unsigned char Seconds;
-volatile unsigned char Minutes;
+volatile unsigned char PacketNum;
+volatile unsigned int Count1s;
+volatile unsigned int Seconds;
+volatile unsigned int Minutes;
+
+volatile unsigned char MinutesIn;
+volatile unsigned int SecondsIn;
+
 //the functions
 void interuptconfig();
 void IOconfig();
@@ -46,14 +51,12 @@ void UARTconfig();
 void UARTTx(unsigned char byte);
 void ADCconfig();
 
-unsigned int gettemp();
-
 //define min and max valid voltage to measure humidity
 #define AMT1001_HUMIDITYVMIN 0.0
-#define AMT1001_HUMIDITYVMAX 3.3
+#define AMT1001_HUMIDITYVMAX 3.0
 
 //slope factor to calculate humidity
-#define AMT1001_HUMIDITYSLOPE 23.54
+#define AMT1001_HUMIDITYSLOPE 28 //33.33
 
 //define min and max valid adc to measure temperature
 #define AMT1001_TEMPERATUREVMIN 0.0
@@ -70,8 +73,8 @@ unsigned int gettemp();
 
 
 //functions
-int amt1001_gethumidity(float voltage);
-int amt1001_gettemperature(int adcvalue);
+unsigned char amt1001_gethumidity(double voltage);
+unsigned char amt1001_gettemperature(int adcvalue);
 
 
 
