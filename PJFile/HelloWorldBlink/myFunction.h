@@ -26,7 +26,17 @@
 #define RXD BIT1
 
 
+unsigned int i; //Counter
 
+volatile unsigned char UARTRecvdata;
+volatile unsigned int am;
+volatile unsigned int adc;
+volatile float vol;
+volatile unsigned int test[2];
+
+volatile unsigned char Count1s;
+volatile unsigned char Seconds;
+volatile unsigned char Minutes;
 //the functions
 void interuptconfig();
 void IOconfig();
@@ -35,6 +45,7 @@ void timerconfig();
 void UARTconfig();
 void UARTTx(unsigned char byte);
 void ADCconfig();
+
 unsigned int gettemp();
 
 //define min and max valid voltage to measure humidity
@@ -62,5 +73,6 @@ unsigned int gettemp();
 int amt1001_gethumidity(float voltage);
 int amt1001_gettemperature(int adcvalue);
 
-#endif /* MYFUNCTION_H_ */
 
+
+#endif /* MYFUNCTION_H_ */

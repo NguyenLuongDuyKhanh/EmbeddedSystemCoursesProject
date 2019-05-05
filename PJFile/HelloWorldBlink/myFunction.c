@@ -33,26 +33,17 @@ void IOconfig()
     //PxSEL and PxSEL2 bit is not use
 }
 
-void clockconfig() //chosing clock VLO 12Hz lau vai c*c luon
+void clockconfig() //chosing clock DCO 1Mhz
 {
-    if (CALBC1_8MHZ == 0xFF)
-    {
-        while (1);
-    }
-    DCOCTL = 0;
-    BCSCTL1 = CALBC1_8MHZ;
-    DCOCTL = CALDCO_8MHZ; //8MHz/1MH/...
-
-    BCSCTL2 |= SELM_0;
+    DCOCTL = 0; // Select lowest DCOx and MODx settings
+       BCSCTL1 = CALBC1_1MHZ; // Set DCO
+       DCOCTL = CALDCO_1MHZ;
 }
 
 void timerconfig()
 {
-    TA0CTL |= TASSEL_2 + MC_2 + TAIE;
-    //TA0CTL |= TASSEL_2  + MC_1 + TAIE;              //Upmode
-    //TA0CTL |= TASSEL_2  + MC_3  + TAIE;           //Up/downmode
-
-    //TA0CCR0 = 60000;                              //only in MC_1 or MC_3
+    TA0CTL |= TASSEL_2 + MC_1 + TAIE;
+    TA0CCR0 = 50000;                              //only in MC_1 or MC_3
 }
 
 void UARTconfig()
@@ -60,24 +51,12 @@ void UARTconfig()
     P1SEL = BIT1 + BIT2;        //P1.1 = Rx, P1.2 = Tx
     P1SEL2 = BIT1 + BIT2;       //
 
-    UCA0CTL1 |= UCSWRST;
-    ////////////////
-    UCA0CTL0 = 0;
-    //none parity
-    //8bits data
-    //1bit stop
-    //LSB
-
-    UCA0CTL1 = UCSSEL_2 | UCSWRST;
-    ///////////baud 9600
-    UCA0MCTL = UCBRS_1 | UCBRS_0 | UCOS16;
-
-    UCA0BR0 = 52;
-    UCA0BR1 = 00;
-    //////////////
-    UCA0CTL1 &= ~UCSWRST;       //reset uart module
-
-    IE2 |= UCA0RXIE;            //UART revc interuppt
+    UCA0CTL1 |= UCSSEL_2; // SMCLK
+    UCA0BR0 = 0x08; // 1MHz 115200
+    UCA0BR1 = 0x00; // 1MHz 115200
+    UCA0MCTL = UCBRS2 + UCBRS0; // Modulation UCBRSx = 5
+    UCA0CTL1 &= ~UCSWRST; // **Initialize USCI state machine**
+    UC0IE |= UCA0RXIE; // Enable USCI_A0 RX interrupt
 }
 
 void UARTTx(unsigned char byte)
@@ -88,31 +67,11 @@ void UARTTx(unsigned char byte)
 
 void ADCconfig()
 {
-    // Disable ADC before configuration.
-       ADC10CTL0 &= ~ENC;
-
-       // Turn ADC on in single line before configuration.
-       ADC10CTL0 = ADC10ON;
-
-       // Make sure the ADC is not running per 22.2.7
-           while(ADC10CTL1 & ADC10BUSY);
-
-    ADC10CTL1 = INCH_5 |ADC10SSEL_0;
-    ADC10AE0 = BIT5;
-    ADC10CTL0 = SREF_0;
-    ADC10CTL0 |= ADC10ON + ENC;
-
-    // Repeat conversion.
-        ADC10DTC0 = ADC10CT;
-        // Only one conversion at a time.
-        ADC10DTC1 = 1;
-
-    // Enable conversion.
-      ADC10CTL0 |= ENC;
-      // Start conversion
-      ADC10CTL0 |= ADC10SC;
+    ADC10CTL1 = INCH_5 + CONSEQ_1;            // A2/A1/A0, single sequence
+          ADC10CTL0 = ADC10SHT_2 + MSC + ADC10ON + ADC10IE;
+          ADC10DTC1 = 0x02;                         // 3 conversions
+          ADC10AE0 |= BIT5 + BIT4;                         // Disable digital I/O on P1.0 to P1.2
 }
-
 unsigned int gettemp()
 {
     ADC10CTL0 |= ADC10SC;
@@ -126,6 +85,7 @@ int amt1001_gethumidity(float voltage) {
     else
         return -1;
 }
+
 
 /*
  * get temperature based on read voltage
@@ -166,4 +126,95 @@ int amt1001_gettemperature(int adcvalue) {
     t = mint + ((maxt-mint)/amt1001_lookupadcstep) * (adcvalue-a);
 
     return t;
+}
+
+/*
+ * DEFINE INTERUPT VECTOR
+ */
+
+// Timer A0 interrupt service routine
+#pragma vector=TIMER0_A1_VECTOR
+__interrupt void Timer_A_1 (void)
+{
+   switch(TA0IV)
+   {
+   case 2:  break;
+   case 4:  break;
+   case 10:
+       {
+           Count1s++;
+
+           if(Count1s==20)
+           {
+           P1OUT ^= BIT0;
+           Count1s=0;
+           Seconds++;
+
+           ADC10CTL0 &= ~ENC;
+              while (ADC10CTL1 & BUSY);               // Wait if ADC10 core is active
+              ADC10SA = (unsigned int)&test;            // Copies data in ADC10SA to unsigned int adc array
+              ADC10CTL0 |= ENC + ADC10SC;             //
+
+           UARTTx(Seconds);
+           UARTTx(test[0]/4);
+           UARTTx(test[1]/4);
+           __bis_SR_register(CPUOFF + GIE);
+           }
+           break;
+       }
+   }
+}
+
+#pragma vector=PORT1_VECTOR
+__interrupt void Port(void)
+{
+    /*
+    P1OUT ^= BIT0 + BIT6;
+    P1IFG &= ~BIT3;
+
+    ADC10CTL0 |= ADC10SC;
+           while (ADC10CTL1 & 1);
+           ADC10SA = ((unsigned int)&test);
+
+           am = amt1001_gethumidity( gettemp() * (3.3 / 254.0));
+           vol = gettemp() * (3.3 / 1024);
+           adc = gettemp();
+
+    UARTTx(test);
+    */
+}
+
+//const char string[] = { "Hello World\r\n" };
+
+#pragma vector=USCIAB0TX_VECTOR
+__interrupt void USCI0TX_ISR(void)
+{
+    /*
+   P1OUT |= TXLED;
+     UCA0TXBUF = string[i++]; // TX next character
+    if (i == sizeof string - 1) // TX over?
+       UC0IE &= ~UCA0TXIE; // Disable USCI_A0 TX interrupt
+    P1OUT &= ~TXLED;
+    */
+}
+
+#pragma vector=USCIAB0RX_VECTOR
+__interrupt void USCI0RX_ISR(void)
+{
+    /*
+   P1OUT |= RXLED;
+    if (UCA0RXBUF == 'a') // 'a' received?
+    {
+       i = 0;
+       UC0IE |= UCA0TXIE; // Enable USCI_A0 TX interrupt
+      UCA0TXBUF = string[i++];
+    }
+    P1OUT &= ~RXLED;
+    */
+}
+
+#pragma vector=ADC10_VECTOR
+__interrupt void ADC10_ISR(void)
+{
+  __bic_SR_register_on_exit(CPUOFF);        // Clear CPUOFF bit from 0(SR)
 }
