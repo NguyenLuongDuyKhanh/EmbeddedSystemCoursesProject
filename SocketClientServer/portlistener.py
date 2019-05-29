@@ -1,20 +1,20 @@
 # first of all import the socket library 
 import socket                
-import pymysql.cursors  
+#import pymysql.cursors  
 
-connection = pymysql.connect(host='localhost',
-                             user='root',
-                             password='root',
-				db='test',
-                          unix_socket='/var/run/mysqld/mysqld.sock')
+#connection = pymysql.connect(host='localhost',
+ #                            user='root',
+  #                           password='root',
+#				db='test',
+ #                         unix_socket='/var/run/mysqld/mysqld.sock')
 
 print ("connect successful!!")
-cursor=connection.cursor()
+#cursor=connection.cursor()
 # next create a socket object 
 
 
 s = socket.socket()          
-print "Socket successfully created"
+print ("Socket successfully created")
   
 # reserve a port on your computer in our 
 # case it is 12345 but it can be anything 
@@ -43,11 +43,11 @@ while True:
    # send a thank you message to the client.  
    c.send("Thank you for connecting") 
 	#cursor=connection.cursor()
-   sql="select * from testingtable"
-   cursor.execute(sql)
-   print ("cursor.description: ", cursor.description)  
-   print ()
-   for row in cursor:
-	print(row)
+  # sql="select * from testingtable"
+  # cursor.execute(sql)
+  # print ("cursor.description: ", cursor.description)  
+  # print ()
+   #for row in cursor:
+#	print(row)
  # Close the connection with the client 
    c.close() 
