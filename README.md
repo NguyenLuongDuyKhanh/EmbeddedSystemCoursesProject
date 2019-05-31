@@ -100,7 +100,7 @@ https://www.webforefront.com/django/setupdjangodatabase.html
 https://docs.djangoproject.com/en/2.2/ref/databases/
 http://www.ti.com/lit/ug/slau144j/slau144j.pdf
 http://www.ti.com/lit/ds/symlink/msp430g2553.pdf
-
+https://minhng.info/tutorials/hoc-django-trong-1-ngay.html?fbclid=IwAR14ow7tZsYc9-N2Ulyp_jIa2PyLOvs8XlZ5niiBFDZuTnB6b8dJ_5Aet30
 ## Acknowledgments
 
 * Hat tip to anyone whose code was used
