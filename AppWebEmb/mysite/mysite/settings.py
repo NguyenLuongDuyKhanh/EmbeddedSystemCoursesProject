@@ -86,10 +86,12 @@ DATABASES = {
         #'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         #'ENGINE': 'sql_server.pyodbc', #1
         'ENGINE': 'djongo', #1
-        'NAME': 'django_newsproject', #2
+        'NAME': 'StorgeTemp&Hum', #2
     }
 }
+DJANGO_MONGOENGINE_OVERRIDE_ADMIN = True
 
+SESSION_ENGINE = 'django_mongoengine.sessions'
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
