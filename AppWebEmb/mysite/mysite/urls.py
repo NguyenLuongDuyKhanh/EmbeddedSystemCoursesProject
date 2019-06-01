@@ -22,7 +22,7 @@ from django.conf.urls import url
 from django.conf import settings
 from django.conf.urls.static import static
 
-from ecom.views import index, product
+from ecom import views
 
 urlpatterns = [
     path('polls/', include('polls.urls')),
@@ -30,8 +30,8 @@ urlpatterns = [
     #path('^s',include('theme.urls')),   
     url(r'^admin/', admin.site.urls),
     url(r'^test', homepage), #3
-    #url(r'^$',views.index,name='index'),
-    #url(r'^product/(?P<product_id>[0-9]+)/$', views.product, name='product'),
-    url(r'^$', index),
-    url(r'^product/(?P<product_id>[0-9]+)/$', product),
+    url(r'^$',views.index,name='index'),
+    url(r'^product/(?P<product_id>[0-9]+)/$', views.product, name='product'),
+    #url(r'^$', index),
+    #url(r'^product/(?P<product_id>[0-9]+)/$', product),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
