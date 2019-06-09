@@ -36,7 +36,7 @@ void setup()
 {
     //Bật baudrate ở mức 115200 để giao tiếp với máy tính qua Serial
     
-    Serial.begin(9600);
+    Serial.begin(115200);
     delay(10);
     StaticJsonBuffer<100> jsonBuffer;
     JsonObject& root = jsonBuffer.createObject();
@@ -64,40 +64,18 @@ void setup()
     Serial.println(F("Da ket noi WiFi"));
     Serial.println(F("Di chi IP cua ESP8266 (Socket Client ESP8266): "));
     Serial.println(WiFi.localIP());
-
+/*
     client.connect(host, port);
     //client.send("atime", "message", "{ "fruit": "Apple", "size": "Large", "color": "Red" }");
     client.send("atime", "message",str);
     //client.sendMessage(str);
-    client.disconnect();
+    client.disconnect();*/
 }
  
 void loop()
 {
-    if(Serial.available())
-    {
-      client.connect(host, port);
-    }else client.disconnect();
-  
-//    //tạo một task cứ sau "interval" giây thì chạy lệnh:
-//    if (millis() - previousMillis > interval) {
-//        //lệnh:
-//        previousMillis = millis();
-// 
-//        //gửi sự kiện "atime" là một JSON chứa tham số message có nội dung là Time please?
-//        
-//    }
-// 
-//    //Khi bắt được bất kỳ sự kiện nào thì chúng ta có hai tham số:
-//    //  +RID: Tên sự kiện
-//    //  +RFull: Danh sách tham số được nén thành chuỗi JSON!
-//    if (client.monitor()) {
-//        Serial.println(RID);
-//        Serial.println(Rfull);
-//    }
-// 
-//    //Kết nối lại!
-//    if (!client.connected()) {
-//      client.reconnect(host, port);
-//    }
+  if(Serial.available())
+  {
+    Serial.print((char)Serial.read());
+  }
 }
